@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:ema_app/widgets/drawer.dart';
+
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -9,10 +11,19 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text("E M A"),
       ),
-      body: Center(
-        child: Container(child: Text("Hi Myself Abhay Mishra, I am App Devloper")),
+      body: Container(
+        child: Column(
+          children: [
+            
+      Image.asset(
+                  "assets/images/logo.jpg",
+                  fit: BoxFit.cover,
+                ),
+            
+          ],
+        ),
       ),
-      drawer: Drawer(),
+      drawer: MyDrawer(),
     );
   }
 }

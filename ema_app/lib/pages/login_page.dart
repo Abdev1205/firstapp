@@ -1,117 +1,172 @@
-// ignore_for_file: prefer_const_constructors
-
-import 'package:ema_app/utilis/route.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+import 'home_page.dart';
+
+
+enum LoginScreen{
+  SHOW_MOBILE_ENTER_WIDGET,
+  SHOW_OTP_FORM_WIDGET
+}
+class Login extends StatefulWidget {
+  const Login({Key? key}) : super(key: key);
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  _LoginState createState() => _LoginState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  // This widget is the root of your application.
-  String name = "";
-  bool changeButton = false;
+class _LoginState extends State<Login> {
+TextEditingController  phoneController = TextEditingController();
+TextEditingController  otpController = TextEditingController();
+LoginScreen currentState = LoginScreen.SHOW_MOBILE_ENTER_WIDGET;
+FirebaseAuth _auth = FirebaseAuth.instance;
+String verificationID = "";
+
+void SignOutME() async{
+  await _auth.signOut();
+}
+void signInWithPhoneAuthCred(AuthCredential phoneAuthCredential) async
+{
+
+  try {
+    final authCred = await _auth.signInWithCredential(phoneAuthCredential);
+
+    if(authCred.user != null)
+    {
+
+      Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => HomePage()));
+    }
+  } on FirebaseAuthException catch (e) {
+
+    print(e.message);
+    ScaffoldMessenger.of(context).showSnackBar( SnackBar(content: Text('Some Error Occured. Try Again Later')));
+  }
+}
+
+
+showMobilePhoneWidget(context){
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      
+      SizedBox(
+      height: 40.0,
+                ),
+      Image.asset(
+                  "assets/images/login.png",
+                  fit: BoxFit.cover,
+                ),
+      Text("Verify Your Phone Number" , style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold),),
+      SizedBox(height: 7,),
+      SizedBox(height: 20,),
+      Container(
+        padding: const EdgeInsets.symmetric(
+                      vertical: 16.0, horizontal: 32.0),
+        child: Center(
+          child: SingleChildScrollView(
+          
+          child:      
+           TextField(
+            
+
+            controller: phoneController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12) ),
+                hintText: "Enter Your PhoneNumber",
+                labelText: "Phone Number",
+            ),
+          ),
+        ),
+      )),
+      SizedBox(height: 20,),
+      
+
+      ElevatedButton
+      
+      (onPressed: ()  async{
+        await _auth.verifyPhoneNumber(
+
+            phoneNumber: "+91${phoneController.text}",
+            verificationCompleted: (phoneAuthCredential) async{
+
+
+            },
+            verificationFailed: (verificationFailed){
+              print(verificationFailed);
+            },
+
+            codeSent: (verificationID, resendingToken) async{
+              setState(() {
+
+                currentState = LoginScreen.SHOW_OTP_FORM_WIDGET;
+                this.verificationID = verificationID;
+              });
+            },
+            codeAutoRetrievalTimeout: (verificationID) async{
+
+            }
+            
+        );
+      }, child: Text("Send OTP")),
+      SizedBox(height: 16,),
+      Spacer()
+    ],
+  );
+}
+
+
+showOtpFormWidget(context){
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      SizedBox(
+      height: 30.0,
+                ),
+      Image.asset(
+                  "assets/images/otp.jpg",
+                  fit: BoxFit.cover,
+                ),
+      Text("ENTER YOUR OTP" , style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold),),
+      SizedBox(height: 7,),
+      SizedBox(height: 20,),
+      Container(
+        padding: const EdgeInsets.symmetric(
+                      vertical: 16.0, horizontal: 32.0),
+        child: Center(
+          child: SingleChildScrollView(
+          child:       TextField(
+
+            controller: otpController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12) ),
+                hintText: "Enter Your OTP"
+            ),
+          ),
+        )),
+      ),
+      SizedBox(height: 20,),
+      ElevatedButton(onPressed: () {
+
+        AuthCredential phoneAuthCredential = PhoneAuthProvider.credential(verificationId: verificationID, smsCode: otpController.text);
+        signInWithPhoneAuthCred(phoneAuthCredential);
+      }, child: Text("Verify")),
+      SizedBox(height: 16,),
+      Spacer()
+    ],
+  );
+}
+
+
   @override
   Widget build(BuildContext context) {
-    return Material(
-        color: Colors.white,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(
-                height: 60.0,
-              ),
-              Image.asset(
-                "assets/images/login.png",
-                fit: BoxFit.cover,
-              ),
-              SizedBox(
-                height: 20.0,
-              ),
-              Text(
-                " Hi $name ,Welcome To E M A",
-                style: TextStyle(
-                  fontSize: 25.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(
-                height: 20.0,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 16.0,
-                  horizontal: 32.0,
-                ),
-                child: Column(children: [
-                  TextFormField(
-                    decoration: InputDecoration(
-                      hintText: "Enter Your Name",
-                      labelText: "Name",
-                    ),
-                    onChanged: (value) {
-                      name = value;
-                      setState(() {});
-                    },
-                  ),
-                  TextFormField(
-                      decoration: InputDecoration(
-                    hintText: "Enter Your Phone Number",
-                    labelText: "Phone Number",
-                  )),
-                  SizedBox(
-                    height: 30.0,
-                  ),
-                  InkWell(
-                    onTap: () async {
-                      setState(() {
-                        changeButton = true;
-                      });
-                      await Future.delayed(Duration(seconds: 1));
-                      Navigator.pushNamed(context, MyRoute.homeroute);
-                    },
-                    child: AnimatedContainer(
-                      duration: Duration(seconds: 1),
-                      height: 50,
-                      width: changeButton ? 50 : 150,
-                      alignment: Alignment.center,
-                      // ignore: sort_child_properties_last
-                      child: changeButton
-                          ? Icon(
-                              Icons.done,
-                              color: Colors.white,
-                            )
-                          : Text(
-                              "Login",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                      decoration: BoxDecoration(
-                          color: Colors.indigo,
-                          borderRadius:
-                              BorderRadius.circular(changeButton ? 50 : 8)),
-                    ),
-                  )
-
-                  /*ElevatedButton(
-                      child: Text("Login"),
-                      style: TextButton.styleFrom(),
-                      onPressed: () {
-                        Navigator.pushNamed(
-                          context,
-                          MyRoute.homeroute,
-                        );
-                      }),*/
-                ]),
-              )
-            ],
-          ),
-        ));
+    return Scaffold(
+      body: currentState == LoginScreen.SHOW_MOBILE_ENTER_WIDGET ? showMobilePhoneWidget(context) : showOtpFormWidget(context),
+    );
   }
 }
