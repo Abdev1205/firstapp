@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "66283347326",
+    "project_id": "ema-app-a4386",
+    "storage_bucket": "ema-app-a4386.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:66283347326:android:b4b0a1b932b64ad0a2272f",
+        "android_client_info": {
+          "package_name": "com.example.ema_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "66283347326-hjln5jcv4stgvkejd1sho0vk29j9d9a4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ema_app",
+            "certificate_hash": "61d11bef16577b05a16a3a35cfcab11962608b75"
+          }
+        },
+        {
+          "client_id": "66283347326-5okmno4ocbr9hc45t7j895padt1l3qeo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIo64N52CvPVckjNXnr1_pDn43FfcpZ0Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "66283347326-5okmno4ocbr9hc45t7j895padt1l3qeo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
